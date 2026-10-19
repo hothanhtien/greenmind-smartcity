@@ -1,0 +1,78 @@
+name: backend-production-deploy
+
+on:
+  push:
+    branches:
+      - main
+    paths: ["services/backend/**"]
+  workflow_dispatch: {}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Tailscale
+        run: |
+          curl -fsSL https://tailscale.com/install.sh | sh
+
+      - name: Start Tailscale and authenticate
+        run: |
+          sudo tailscaled &
+          sleep 3
+          sudo tailscale up --authkey ${{ secrets.TAILSCALE_AUTH_KEY }}
+          sleep 5
+
+          
+      # -------------------------------
+      # Install sshpass
+      # -------------------------------
+      - name: Install sshpass
+        run: sudo apt-get update && sudo apt-get install -y sshpass
+
+      # -------------------------------
+      # Deploy Green MindMap Backend
+      # -------------------------------
+      - name: Deploy Green MindMap Backend
+        env:
+          SSHPASS: ${{ secrets.SERVER_PASSWORD }}
+        run: |
+          sshpass -p "$SSHPASS" ssh \
+            -o StrictHostKeyChecking=no \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
+            bash -s << 'EOF'
+
+          set -e
+
+          echo "Connected to server"
+                    
+          cd /home/tnqbao/Green_MindMap_Backend
+
+          docker pull iamqbao/green_mind_backend:latest
+
+          docker rm -f green-mind-backend || true
+
+          docker network create green-mindmap-net 2>/dev/null || true
+
+          sed -i 's/^export //g' .env
+
+          docker run -d \
+            --name green-mind-backend \
+            --restart unless-stopped \
+            --env-file .env \
+            -e GREENMIND_CORE_DIR=/core \
+            -v "$HOME/greenmind-core/backend:/core:ro" \
+            --network green-mind-network \
+            -p 3000:3000 \
+            iamqbao/green_mind_backend:latest
+
+          docker ps | grep green-mind-backend
+          
+          echo "Green MindMap Backend deployed successfully"
+          
+          docker system prune -a --volumes -f
+
+          EOF

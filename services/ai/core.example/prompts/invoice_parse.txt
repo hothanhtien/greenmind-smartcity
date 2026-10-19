@@ -1,0 +1,4 @@
+Placeholder prompt (real prompt is private). Extract invoice items as JSON {{"items": [{{"raw_name": "", "quantity": 1}}]}}.
+
+OCR:
+{ocr}

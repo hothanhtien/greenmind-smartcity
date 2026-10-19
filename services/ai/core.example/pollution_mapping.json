@@ -1,0 +1,48 @@
+{
+  "_comment": "Placeholder values. alpha: TACO class id -> impact factor; beta: class id -> {pollutant: weight}. Real values are private.",
+  "detect_conf": 0.25,
+  "alpha": {
+    "1": 1.0,
+    "25": 1.0
+  },
+  "beta": {
+    "1": {
+      "Pb": 0.5
+    },
+    "25": {
+      "CH4": 0.5
+    }
+  },
+  "pollutants": [
+    "CO2",
+    "CH4",
+    "PM2.5",
+    "NOx",
+    "SO2",
+    "Pb",
+    "Hg",
+    "Cd",
+    "nitrate",
+    "chemical_residue",
+    "microplastic",
+    "dioxin",
+    "toxic_chemicals",
+    "non_biodegradable",
+    "styrene"
+  ],
+  "sigmoid": {
+    "k": 1,
+    "midpoint": 0.5
+  },
+  "impact_groups": {
+    "air_pollution": [
+      "CO2"
+    ],
+    "water_pollution": [
+      "Pb"
+    ],
+    "soil_pollution": [
+      "non_biodegradable"
+    ]
+  }
+}

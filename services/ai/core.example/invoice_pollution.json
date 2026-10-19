@@ -1,0 +1,39 @@
+{
+  "_comment": "Placeholder values for /invoice-pollution. Real values are private.",
+  "alpha": {
+    "1": 1.0
+  },
+  "beta": {
+    "1": {
+      "Pb": 0.5
+    }
+  },
+  "pollutants": [
+    "CO2",
+    "CH4",
+    "PM2.5",
+    "NOx",
+    "SO2",
+    "Pb",
+    "Hg",
+    "Cd",
+    "nitrate",
+    "chemical_residue",
+    "microplastic",
+    "dioxin",
+    "toxic_chemicals",
+    "non_biodegradable",
+    "styrene"
+  ],
+  "impact_groups": {
+    "air": [
+      "CO2"
+    ],
+    "water": [
+      "Pb"
+    ],
+    "soil": [
+      "non_biodegradable"
+    ]
+  }
+}

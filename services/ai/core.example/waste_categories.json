@@ -1,0 +1,10 @@
+{
+  "_comment": "Placeholder mapping of TACO class name -> recyclable | organic | hazardous | residual. Real mapping is private.",
+  "detect_conf": 0.25,
+  "category_map": {
+    "Glass bottle": "recyclable",
+    "Food waste": "organic",
+    "Battery": "hazardous",
+    "Tissues": "residual"
+  }
+}

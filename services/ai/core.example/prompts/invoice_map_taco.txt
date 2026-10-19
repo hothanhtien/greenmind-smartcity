@@ -1,0 +1,1 @@
+Placeholder prompt (real prompt is private). Return JSON {{"class_id": 58}} for item: {name}

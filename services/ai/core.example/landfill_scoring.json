@@ -1,0 +1,18 @@
+{
+  "_comment": "Placeholder scoring for /predict_trash_seg. Real values are private.",
+  "detect_conf": 0.25,
+  "ground_percentile": 50,
+  "grid_size": 4,
+  "local_mean_weight": 0.5,
+  "local_max_weight": 0.5,
+  "height_weight": 0.5,
+  "local_weight": 0.5,
+  "score_scale": 1,
+  "levels": [
+    {
+      "below": 0.5,
+      "label": "Clean"
+    }
+  ],
+  "top_level": "Critical"
+}

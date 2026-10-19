@@ -1,0 +1,30 @@
+{
+  "_comment": "Placeholder values. class_weights keys are lower-case TACO class names. Real values are private.",
+  "base_score": 50,
+  "class_weights": {
+    "glass bottle": 1,
+    "battery": -1
+  },
+  "groups": {
+    "recyclable": [
+      "glass bottle"
+    ],
+    "plastic": [
+      "plastic film"
+    ],
+    "hazard": [
+      "battery"
+    ],
+    "organic": [
+      "food waste"
+    ]
+  },
+  "rules": {
+    "plastic_penalty_per_item": 1,
+    "plastic_ratio_threshold": 0.5,
+    "plastic_ratio_penalty": 1,
+    "organic_contamination_penalty": 1,
+    "hazard_penalty": 1,
+    "good_sorting_bonus": 1
+  }
+}

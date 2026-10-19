@@ -1,0 +1,26 @@
+# Local infrastructure for GreenMind: PostgreSQL + Redis.
+# Usage: cp infra/.env.example infra/.env && docker compose -f infra/docker-compose.yml --env-file infra/.env up -d
+services:
+  postgres:
+    image: postgres:16
+    container_name: greenmind-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in infra/.env}
+      POSTGRES_DB: ${POSTGRES_DB:-green_mind_db}
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - greenmind_pg:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  redis:
+    image: redis:7
+    container_name: greenmind-redis
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD:?set REDIS_PASSWORD in infra/.env}"]
+    ports:
+      - "${REDIS_PORT:-6380}:6379"
+    restart: unless-stopped
+
+volumes:
+  greenmind_pg:

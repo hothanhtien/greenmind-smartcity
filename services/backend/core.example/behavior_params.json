@@ -1,0 +1,9 @@
+{
+  "_comment": "Placeholder OCEAN metric parameters sent to the AI behavior engine. Real values are private.",
+  "avg_daily_spend": { "weight": 0.1, "direction": "down", "sigma_r": 1.0, "alpha": 0.1 },
+  "spend_variability": { "weight": 0.1, "direction": "up", "sigma_r": 1.0, "alpha": 0.1 },
+  "daily_distance_km": { "weight": 0.1, "direction": "up", "sigma_r": 1.0, "alpha": 0.1 },
+  "list_adherence": { "weight": 0.1, "direction": "up", "sigma_r": 1.0, "alpha": 0.1 },
+  "brand_novelty": { "weight": 0.1, "direction": "up", "sigma_r": 1.0, "alpha": 0.1 },
+  "night_out_freq": { "weight": 0.1, "direction": "up", "sigma_r": 1.0, "alpha": 0.1 }
+}

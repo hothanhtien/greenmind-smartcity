@@ -1,0 +1,12 @@
+.env
+.idea
+node_modules
+dist
+.vscode
+tsconfig.tsbuildinfo
+# local env files with secrets (only *.env.example is committed)
+*.env
+.env.*
+!.env.example
+!*.env.example
+package-lock.json

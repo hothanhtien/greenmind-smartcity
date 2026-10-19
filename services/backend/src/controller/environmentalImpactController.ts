@@ -1,0 +1,713 @@
+import { Request, Response } from "express";
+import { z } from "zod";
+import AppDataSource from "../infrastructure/database";
+import { EnvironmentalImpact } from "../entity/environmental_impact";
+import { WasteDetection, DETECT_TYPE } from "../entity/WasteDetection";
+import { Locations } from "../entity/locations";
+import { User } from "../entity/user";
+import { Household } from "../entity/household";
+import { UrbanArea } from "../entity/urban_area";
+import { Between, In } from "typeorm";
+
+const ImpactQuerySchema = z.object({
+    range: z.enum(["day", "week", "month"]).default("month"),
+    startDate: z.string().optional(),
+    endDate: z.string().optional(),
+    urbanAreaId: z.string().optional(),
+    latMin: z.coerce.number().optional(),
+    latMax: z.coerce.number().optional(),
+    lngMin: z.coerce.number().optional(),
+    lngMax: z.coerce.number().optional(),
+});
+
+const PollutionSchema = z.object({
+    CO2: z.number().nonnegative().optional(),
+    dioxin: z.number().nonnegative().optional(),
+    microplastic: z.number().nonnegative().optional(),
+    toxic_chemicals: z.number().nonnegative().optional(),
+    non_biodegradable: z.number().nonnegative().optional(),
+    NOx: z.number().nonnegative().optional(),
+    SO2: z.number().nonnegative().optional(),
+    CH4: z.number().nonnegative().optional(),
+    "PM2.5": z.number().nonnegative().optional(),
+    Pb: z.number().nonnegative().optional(),
+    Hg: z.number().nonnegative().optional(),
+    Cd: z.number().nonnegative().optional(),
+    nitrate: z.number().nonnegative().optional(),
+    chemical_residue: z.number().nonnegative().optional(),
+    styrene: z.number().nonnegative().optional(),
+}).optional();
+
+const ImpactBodySchema = z.object({
+    record_date: z.string().datetime({ offset: true }).optional(),
+    pollution: PollutionSchema,
+    impact: z.object({
+        air: z.number().nonnegative().optional(),
+        water: z.number().nonnegative().optional(),
+        soil: z.number().nonnegative().optional(),
+    }).optional(),
+});
+
+const ImpactRepo = () => AppDataSource.getRepository(EnvironmentalImpact);
+const LocationRepo = () => AppDataSource.getRepository(Locations);
+const UserRepo = () => AppDataSource.getRepository(User);
+const HouseholdRepo = () => AppDataSource.getRepository(Household);
+const UrbanAreaRepo = () => AppDataSource.getRepository(UrbanArea);
+
+async function assertUserExists(userId: string, res: Response): Promise<boolean> {
+    const exists = await UserRepo().findOne({ where: { id: userId }, select: ["id"] });
+    if (!exists) {
+        res.status(404).json({ message: "User not found in database" });
+        return false;
+    }
+    return true;
+}
+
+function buildDateRange(range: "day" | "week" | "month", startDate?: string, endDate?: string): { from: Date; to: Date } {
+    const to = endDate ? new Date(endDate) : new Date();
+    const from = startDate ? new Date(startDate) : new Date();
+
+    if (!startDate) {
+        if (range === "day") {
+            from.setHours(0, 0, 0, 0);
+        } else if (range === "week") {
+            from.setDate(from.getDate() - 7);
+        } else {
+            from.setDate(from.getDate() - 30);
+        }
+    }
+    from.setHours(0, 0, 0, 0);
+    to.setHours(23, 59, 59, 999);
+
+    return { from, to };
+}
+
+function startOfDay(date: Date): Date {
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
+    return d;
+}
+
+function mapEntityToPollutionObject(record: EnvironmentalImpact) {
+    return {
+        CO2: record.co2,
+        dioxin: record.dioxin,
+        microplastic: record.microplastic,
+        toxic_chemicals: record.toxicChemicals,
+        non_biodegradable: record.nonBiodegradable,
+        NOx: record.nox,
+        SO2: record.so2,
+        CH4: record.ch4,
+        "PM2.5": record.pm25,
+        Pb: record.pb,
+        Hg: record.hg,
+        Cd: record.cd,
+        nitrate: record.nitrate,
+        chemical_residue: record.chemicalResidue,
+        styrene: record.styrene,
+    };
+}
+
+/** Helper: aggregate array of EnvironmentalImpact records into pollution/impact/timeSeries */
+function aggregateRecords(records: EnvironmentalImpact[]) {
+    const pollution = {
+        CO2: 0, dioxin: 0, microplastic: 0, toxic_chemicals: 0,
+        non_biodegradable: 0, NOx: 0, SO2: 0, CH4: 0,
+        "PM2.5": 0, Pb: 0, Hg: 0, Cd: 0,
+        nitrate: 0, chemical_residue: 0, styrene: 0,
+    };
+    let totalAir = 0, totalWater = 0, totalSoil = 0;
+    type PollKey = keyof typeof pollution;
+    const pollutionKeys = Object.keys(pollution) as PollKey[];
+
+    const byDate = new Map<string, { air: number; water: number; soil: number; n: number }>();
+
+    for (const record of records) {
+        const p = mapEntityToPollutionObject(record);
+        for (const key of pollutionKeys) {
+            pollution[key] = parseFloat((pollution[key] + (p[key] ?? 0)).toFixed(4));
+        }
+        totalAir += record.airPollution ?? 0;
+        totalWater += record.waterPollution ?? 0;
+        totalSoil += record.soilPollution ?? 0;
+
+        // TypeORM returns date columns as strings from Postgres — cast defensively
+        const d = record.recordDate instanceof Date
+            ? record.recordDate
+            : new Date(record.recordDate);
+        const dateLabel = `${d.getDate()}/${d.getMonth() + 1}`;
+
+        const slot = byDate.get(dateLabel) ?? { air: 0, water: 0, soil: 0, n: 0 };
+        slot.air += record.airPollution ?? 0;
+        slot.water += record.waterPollution ?? 0;
+        slot.soil += record.soilPollution ?? 0;
+        slot.n += 1;
+        byDate.set(dateLabel, slot);
+    }
+
+    // Average per user — all metrics are per-user averages for the selected area
+    const count = records.length || 1;
+    for (const key of pollutionKeys) {
+        pollution[key] = parseFloat((pollution[key] / count).toFixed(4));
+    }
+
+    const impact = {
+        air: parseFloat((totalAir / count).toFixed(4)),
+        water: parseFloat((totalWater / count).toFixed(4)),
+        soil: parseFloat((totalSoil / count).toFixed(4)),
+    };
+
+    // Daily averages for timeSeries
+    const timeSeries = Array.from(byDate.entries()).map(([date, v], i) => ({
+        day: i + 1,
+        date,
+        air: parseFloat((v.air / v.n).toFixed(4)),
+        water: parseFloat((v.water / v.n).toFixed(4)),
+        soil: parseFloat((v.soil / v.n).toFixed(4)),
+    }));
+
+    return { pollution, impact, timeSeries };
+}
+
+class EnvironmentalImpactController {
+    /**
+     * GET /environmental-impact?range=day|week|month&startDate=YYYY-MM-DD&endDate=YYYY-MM-DD
+     * Returns aggregated pollution + impact + timeSeries for the authenticated user.
+     * startDate/endDate override the range preset when provided.
+     */
+    public async getSummary(req: Request, res: Response) {
+        if (!req.user?.userId) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const parsed = ImpactQuerySchema.safeParse(req.query);
+        if (!parsed.success) {
+            return res.status(400).json(parsed.error);
+        }
+
+        const { range, startDate, endDate } = parsed.data;
+        const { from, to } = buildDateRange(range, startDate, endDate);
+
+        try {
+            const records = await ImpactRepo().find({
+                where: {
+                    userId: req.user.userId,
+                    recordDate: Between(from, to),
+                },
+                order: { recordDate: "ASC" },
+            });
+
+            if (records.length === 0) {
+                return res.status(404).json({ message: "No environmental impact data found for this period" });
+            }
+
+            const { pollution, impact, timeSeries } = aggregateRecords(records);
+
+            return res.status(200).json({
+                message: "Environmental impact summary retrieved successfully",
+                data: { pollution, impact, timeSeries },
+            });
+        } catch (e) {
+            console.error("[getSummary]", e);
+            return res.status(500).json({ message: (e as Error).message ?? "Internal server error" });
+        }
+    }
+
+    /**
+     * GET /environmental-impact/all
+     *   ?range=day|week|month
+     *   &startDate=YYYY-MM-DD
+     *   &endDate=YYYY-MM-DD
+     *   &urbanAreaId=<uuid>
+     *
+     * Admin aggregate: uses AI-predicted pollution/impact from WasteDetection
+     * (detectType = predict_pollutant_impact | analyze_all), filtered by urban area.
+     * All values are per-scan averages over the selected period.
+     */
+    public async getSummaryAll(req: Request, res: Response) {
+        if (!req.user?.userId) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const parsed = ImpactQuerySchema.safeParse(req.query);
+        if (!parsed.success) {
+            return res.status(400).json(parsed.error);
+        }
+
+        const { range, startDate, endDate, urbanAreaId, latMin, latMax, lngMin, lngMax } = parsed.data;
+        const { from, to } = buildDateRange(range, startDate, endDate);
+
+        try {
+            const qb = AppDataSource
+                .getRepository(WasteDetection)
+                .createQueryBuilder("wd")
+                .leftJoin("wd.household", "household")
+                .where("wd.pollution IS NOT NULL")
+                .andWhere("wd.detectType IN (:...types)", {
+                    types: [DETECT_TYPE.PREDICT_POLLUTANT, DETECT_TYPE.ANALYZE_ALL],
+                })
+                .andWhere("wd.createdAt >= :from AND wd.createdAt <= :to", { from, to });
+
+            if (urbanAreaId) {
+                qb.andWhere("wd.householdId = :householdId", { householdId: urbanAreaId });
+            }
+
+            // Geographic filter by ward bounds (lat/lng bounding box)
+            if (latMin !== undefined && latMax !== undefined && lngMin !== undefined && lngMax !== undefined) {
+                qb.andWhere("CAST(household.lat AS FLOAT) BETWEEN :latMin AND :latMax", { latMin, latMax })
+                    .andWhere("CAST(household.lng AS FLOAT) BETWEEN :lngMin AND :lngMax", { lngMin, lngMax });
+            }
+
+            const detections = await qb.getMany();
+
+            if (detections.length === 0) {
+                return res.status(404).json({ message: "No environmental impact data found for this period" });
+            }
+
+            // Keys returned by the AI pollutant model
+            const pollKeys = [
+                "CO2", "dioxin", "microplastic", "toxic_chemicals", "non_biodegradable",
+                "NOx", "SO2", "CH4", "PM2.5", "Pb", "Hg", "Cd",
+                "nitrate", "chemical_residue", "styrene",
+            ];
+
+            const pollSum: Record<string, number> = Object.fromEntries(pollKeys.map(k => [k, 0]));
+            let totalAir = 0, totalWater = 0, totalSoil = 0;
+            const byDate = new Map<string, { air: number; water: number; soil: number; n: number }>();
+
+            for (const d of detections) {
+                const p = d.pollution as Record<string, number> | null;
+                if (!p) continue;
+
+                for (const key of pollKeys) {
+                    pollSum[key] += p[key] ?? 0;
+                }
+
+                // Derive impact from pollution (AI's impact field is often null)
+                const air = (p["CO2"] ?? 0) + (p["NOx"] ?? 0) + (p["SO2"] ?? 0) + (p["PM2.5"] ?? 0);
+                const water = (p["Pb"] ?? 0) + (p["Hg"] ?? 0) + (p["Cd"] ?? 0) + (p["nitrate"] ?? 0);
+                const soil = (p["CH4"] ?? 0) + (p["styrene"] ?? 0) + (p["toxic_chemicals"] ?? 0) + (p["non_biodegradable"] ?? 0);
+                totalAir += air;
+                totalWater += water;
+                totalSoil += soil;
+
+                const dt = d.createdAt instanceof Date ? d.createdAt : new Date(d.createdAt as unknown as string);
+                const dateLabel = `${dt.getDate()}/${dt.getMonth() + 1}`;
+                const slot = byDate.get(dateLabel) ?? { air: 0, water: 0, soil: 0, n: 0 };
+                slot.air += air;
+                slot.water += water;
+                slot.soil += soil;
+                slot.n += 1;
+                byDate.set(dateLabel, slot);
+            }
+
+            const count = detections.length || 1;
+            const pollution = Object.fromEntries(
+                pollKeys.map(k => [k, parseFloat((pollSum[k] / count).toFixed(4))])
+            );
+            const impact = {
+                air: parseFloat((totalAir / count).toFixed(4)),
+                water: parseFloat((totalWater / count).toFixed(4)),
+                soil: parseFloat((totalSoil / count).toFixed(4)),
+            };
+            // Build timeSeries for EVERY day in the range (fill 0 for days with no scans)
+            const timeSeries: { day: number; date: string; air: number; water: number; soil: number }[] = [];
+            const cursor = new Date(from);
+            cursor.setHours(0, 0, 0, 0);
+            const endDay = new Date(to);
+            endDay.setHours(0, 0, 0, 0);
+            let dayIndex = 1;
+            while (cursor <= endDay) {
+                const label = `${cursor.getDate()}/${cursor.getMonth() + 1}`;
+                const slot = byDate.get(label);
+                timeSeries.push({
+                    day: dayIndex++,
+                    date: label,
+                    air: slot ? parseFloat((slot.air / slot.n).toFixed(4)) : 0,
+                    water: slot ? parseFloat((slot.water / slot.n).toFixed(4)) : 0,
+                    soil: slot ? parseFloat((slot.soil / slot.n).toFixed(4)) : 0,
+                });
+                cursor.setDate(cursor.getDate() + 1);
+            }
+
+            return res.status(200).json({
+                message: "Environmental impact (AI predictions) retrieved successfully",
+                data: { pollution, impact, timeSeries, recordCount: detections.length },
+            });
+        } catch (e) {
+            console.error("[getSummaryAll]", e);
+            return res.status(500).json({ message: (e as Error).message ?? "Internal server error" });
+        }
+    }
+
+    /**
+     * GET /environmental-impact/urban-areas
+     * Returns distinct households that have at least one pollution scan (WasteDetection).
+     * Used as the "Area" filter dropdown on the dashboard.
+     * Note: urban_areas table is not yet seeded; this derives areas from actual data.
+     */
+    public async getUrbanAreas(req: Request, res: Response) {
+        if (!req.user?.userId) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+        try {
+            // Get distinct household IDs that have pollution scan data
+            const rows = await AppDataSource
+                .getRepository(WasteDetection)
+                .createQueryBuilder("wd")
+                .leftJoin("wd.household", "household")
+                .select([
+                    "household.id        AS id",
+                    "household.address   AS name",
+                    "household.lat       AS lat",
+                    "household.lng       AS lng",
+                ])
+                .where("wd.pollution IS NOT NULL")
+                .andWhere("wd.detectType IN (:...types)", {
+                    types: [DETECT_TYPE.PREDICT_POLLUTANT, DETECT_TYPE.ANALYZE_ALL],
+                })
+                .andWhere("household.id IS NOT NULL")
+                .groupBy("household.id")
+                .addGroupBy("household.address")
+                .addGroupBy("household.lat")
+                .addGroupBy("household.lng")
+                .orderBy("household.address", "ASC")
+                .getRawMany();
+
+            // Shape to { id, name, city } matching the UrbanArea frontend type
+            const areas = rows.map((r: any) => ({
+                id: r.id,
+                name: r.name ?? "Unknown address",
+                city: r.lat && r.lng ? `${parseFloat(r.lat).toFixed(4)}, ${parseFloat(r.lng).toFixed(4)}` : "",
+            }));
+
+            return res.status(200).json({ message: "Urban areas retrieved", data: areas });
+        } catch (e) {
+            return res.status(500).json({ message: (e as Error).message ?? "Internal server error" });
+        }
+    }
+
+    /**
+     * POST /environmental-impact
+     * Log / upsert environmental impact for a given date.
+     * Body: { record_date?, pollution: { CO2, dioxin, ... }, impact: { air, water, soil } }
+     */
+    public async logImpact(req: Request, res: Response) {
+        if (!req.user?.userId) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const parsed = ImpactBodySchema.safeParse(req.body);
+        if (!parsed.success) {
+            return res.status(400).json(parsed.error);
+        }
+
+        const { record_date, pollution, impact } = parsed.data;
+        const recordDate = record_date
+            ? startOfDay(new Date(record_date))
+            : startOfDay(new Date());
+
+        try {
+            const userOk = await assertUserExists(req.user.userId, res);
+            if (!userOk) return;
+
+            const existing = await ImpactRepo().findOne({
+                where: { userId: req.user.userId, recordDate },
+            });
+
+            const record = existing ?? ImpactRepo().create({ userId: req.user.userId });
+            record.recordDate = recordDate;
+
+            // Apply pollution fields if provided
+            if (pollution) {
+                if (pollution.CO2 !== undefined) record.co2 = pollution.CO2;
+                if (pollution.dioxin !== undefined) record.dioxin = pollution.dioxin;
+                if (pollution.microplastic !== undefined) record.microplastic = pollution.microplastic;
+                if (pollution.toxic_chemicals !== undefined) record.toxicChemicals = pollution.toxic_chemicals;
+                if (pollution.non_biodegradable !== undefined) record.nonBiodegradable = pollution.non_biodegradable;
+                if (pollution.NOx !== undefined) record.nox = pollution.NOx;
+                if (pollution.SO2 !== undefined) record.so2 = pollution.SO2;
+                if (pollution.CH4 !== undefined) record.ch4 = pollution.CH4;
+                if (pollution["PM2.5"] !== undefined) record.pm25 = pollution["PM2.5"];
+                if (pollution.Pb !== undefined) record.pb = pollution.Pb;
+                if (pollution.Hg !== undefined) record.hg = pollution.Hg;
+                if (pollution.Cd !== undefined) record.cd = pollution.Cd;
+                if (pollution.nitrate !== undefined) record.nitrate = pollution.nitrate;
+                if (pollution.chemical_residue !== undefined) record.chemicalResidue = pollution.chemical_residue;
+                if (pollution.styrene !== undefined) record.styrene = pollution.styrene;
+            }
+
+            // Apply impact fields if provided
+            if (impact) {
+                if (impact.air !== undefined) record.airPollution = impact.air;
+                if (impact.water !== undefined) record.waterPollution = impact.water;
+                if (impact.soil !== undefined) record.soilPollution = impact.soil;
+            }
+
+            const saved = await ImpactRepo().save(record);
+
+            return res.status(existing ? 200 : 201).json({
+                message: existing ? "Environmental impact updated" : "Environmental impact logged",
+                data: saved,
+            });
+        } catch (e) {
+            return res.status(500).json({ message: (e as Error).message ?? "Internal server error" });
+        }
+    }
+
+    /**
+     * GET /environmental-impact/history
+     * Returns full history paginated
+     */
+    public async getHistory(req: Request, res: Response) {
+        if (!req.user?.userId) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const page = Math.max(1, parseInt(String(req.query.page ?? "1"), 10));
+        const limit = Math.min(100, Math.max(1, parseInt(String(req.query.limit ?? "30"), 10)));
+
+        try {
+            const [records, total] = await ImpactRepo().findAndCount({
+                where: { userId: req.user.userId },
+                order: { recordDate: "DESC" },
+                skip: (page - 1) * limit,
+                take: limit,
+            });
+
+            return res.status(200).json({
+                message: "History retrieved",
+                data: records,
+                pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+            });
+        } catch (e) {
+            return res.status(500).json({ message: (e as Error).message ?? "Internal server error" });
+        }
+    }
+
+    /**
+     * POST /environmental-impact/compute
+     * Auto-compute today's environmental impact from user's location data (GPS distance).
+     * Uses simplified emission factors for new pollutant schema.
+     */
+    public async computeFromLocations(req: Request, res: Response) {
+        if (!req.user?.userId) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const today = startOfDay(new Date());
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        try {
+            const userOk = await assertUserExists(req.user.userId, res);
+            if (!userOk) return;
+
+            const locations = await LocationRepo().find({
+                where: {
+                    userId: req.user.userId,
+                    createdAt: Between(today, tomorrow),
+                },
+                order: { createdAt: "ASC" },
+            });
+
+            // lengthToPreviousLocation is stored in metres → convert to km
+            const distanceKm = locations.reduce(
+                (acc, loc) => acc + (loc.lengthToPreviousLocation ?? 0),
+                0
+            ) / 1000;
+
+            // Emission factors per km (kg) — avg petrol car ~0.12 kg CO2/km
+            const pollution = {
+                co2: parseFloat((distanceKm * 0.12).toFixed(4)),
+                dioxin: parseFloat((distanceKm * 0.0001).toFixed(4)),
+                microplastic: parseFloat((distanceKm * 0.0005).toFixed(4)),
+                toxicChemicals: parseFloat((distanceKm * 0.002).toFixed(4)),
+                nonBiodegradable: parseFloat((distanceKm * 0.001).toFixed(4)),
+                nox: parseFloat((distanceKm * 0.0004).toFixed(4)),
+                so2: parseFloat((distanceKm * 0.0003).toFixed(4)),
+                ch4: parseFloat((distanceKm * 0.004).toFixed(4)),
+                pm25: parseFloat((distanceKm * 0.0001).toFixed(4)),
+                pb: parseFloat((distanceKm * 0.00002).toFixed(4)),
+                hg: parseFloat((distanceKm * 0.000005).toFixed(4)),
+                cd: parseFloat((distanceKm * 0.000002).toFixed(4)),
+                nitrate: parseFloat((distanceKm * 0.0008).toFixed(4)),
+                chemicalResidue: parseFloat((distanceKm * 0.0005).toFixed(4)),
+                styrene: parseFloat((distanceKm * 0.0003).toFixed(4)),
+            };
+
+            const airPollution = parseFloat((pollution.co2 + pollution.nox + pollution.so2 + pollution.pm25).toFixed(4));
+            const waterPollution = parseFloat((pollution.pb + pollution.hg + pollution.cd + pollution.nitrate).toFixed(4));
+            const soilPollution = parseFloat((pollution.ch4 + pollution.styrene + pollution.toxicChemicals + pollution.nonBiodegradable).toFixed(4));
+
+            const existing = await ImpactRepo().findOne({
+                where: { userId: req.user.userId, recordDate: today },
+            });
+
+            const record = existing ?? ImpactRepo().create({ userId: req.user.userId });
+            Object.assign(record, {
+                recordDate: today,
+                ...pollution,
+                airPollution,
+                waterPollution,
+                soilPollution,
+            });
+
+            const saved = await ImpactRepo().save(record);
+
+            return res.status(200).json({
+                message: "Environmental impact computed and saved",
+                data: saved,
+            });
+        } catch (e) {
+            return res.status(500).json({ message: (e as Error).message ?? "Internal server error" });
+        }
+    }
+
+    /**
+     * POST /environmental-impact/compute-all
+     * Compute today's environmental impact for ALL users — uses batch queries to avoid N+1.
+     */
+    public async computeAllUsers(req: Request, res: Response) {
+        const today = startOfDay(new Date());
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        try {
+            const allUsers = await UserRepo().find({ select: ["id"] });
+            if (allUsers.length === 0) {
+                return res.status(200).json({ message: "No users found", data: { total: 0, success: 0, skipped: 0, failed: 0 } });
+            }
+
+            const userIds = allUsers.map(u => u.id);
+
+            // Batch: all locations for today in 1 query
+            const allLocations = await LocationRepo().find({
+                where: { createdAt: Between(today, tomorrow) },
+                select: ["userId", "lengthToPreviousLocation"],
+            });
+
+            // Group by userId — distanceByUser values are in metres
+            const distanceByUser = new Map<string, number>();
+            for (const loc of allLocations) {
+                distanceByUser.set(
+                    loc.userId,
+                    (distanceByUser.get(loc.userId) ?? 0) + (loc.lengthToPreviousLocation ?? 0)
+                );
+            }
+
+            // Batch: all existing impacts for today in 1 query
+            const existingImpacts = await ImpactRepo().find({
+                where: { userId: In(userIds), recordDate: Between(today, tomorrow) },
+                select: ["id", "userId"],
+            });
+            const existingByUser = new Map(existingImpacts.map(e => [e.userId, e]));
+
+            const toSave: EnvironmentalImpact[] = [];
+            let skippedCount = 0;
+
+            for (const user of allUsers) {
+                // Convert metres → km
+                const distanceKm = (distanceByUser.get(user.id) ?? 0) / 1000;
+                const existing = existingByUser.get(user.id);
+
+                if (distanceKm === 0 && !existing) { skippedCount++; continue; }
+
+                const base = distanceKm * 0.21;
+                const pollution = {
+                    // Emission factors per km (kg) — avg petrol car ~0.12 kg CO2/km
+                    co2: parseFloat((distanceKm * 0.12).toFixed(4)),
+                    dioxin: parseFloat((distanceKm * 0.0001).toFixed(4)),
+                    microplastic: parseFloat((distanceKm * 0.0005).toFixed(4)),
+                    toxicChemicals: parseFloat((distanceKm * 0.002).toFixed(4)),
+                    nonBiodegradable: parseFloat((distanceKm * 0.001).toFixed(4)),
+                    nox: parseFloat((distanceKm * 0.0004).toFixed(4)),
+                    so2: parseFloat((distanceKm * 0.0003).toFixed(4)),
+                    ch4: parseFloat((distanceKm * 0.004).toFixed(4)),
+                    pm25: parseFloat((distanceKm * 0.0001).toFixed(4)),
+                    pb: parseFloat((distanceKm * 0.00002).toFixed(4)),
+                    hg: parseFloat((distanceKm * 0.000005).toFixed(4)),
+                    cd: parseFloat((distanceKm * 0.000002).toFixed(4)),
+                    nitrate: parseFloat((distanceKm * 0.0008).toFixed(4)),
+                    chemicalResidue: parseFloat((distanceKm * 0.0005).toFixed(4)),
+                    styrene: parseFloat((distanceKm * 0.0003).toFixed(4)),
+                };
+                const airPollution = parseFloat((pollution.co2 + pollution.nox + pollution.so2 + pollution.pm25).toFixed(4));
+                const waterPollution = parseFloat((pollution.pb + pollution.hg + pollution.cd + pollution.nitrate).toFixed(4));
+                const soilPollution = parseFloat((pollution.ch4 + pollution.styrene + pollution.toxicChemicals + pollution.nonBiodegradable).toFixed(4));
+
+                const record = existing ?? ImpactRepo().create({ userId: user.id });
+                Object.assign(record, { recordDate: today, ...pollution, airPollution, waterPollution, soilPollution });
+                toSave.push(record);
+            }
+
+            // Bulk save
+            await ImpactRepo().save(toSave, { chunk: 100 });
+
+            return res.status(200).json({
+                message: "Compute-all finished",
+                data: {
+                    total: allUsers.length,
+                    success: toSave.length,
+                    skipped: skippedCount,
+                    failed: 0,
+                },
+            });
+        } catch (e) {
+            console.error("[computeAllUsers]", e);
+            return res.status(500).json({ message: (e as Error).message ?? "Internal server error" });
+        }
+    }
+
+    /**
+     * DELETE /environmental-impact/:id
+     */
+    public async deleteRecord(req: Request, res: Response) {
+        if (!req.user?.userId) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const { id } = req.params;
+        if (!id) {
+            return res.status(400).json({ message: "Missing record id" });
+        }
+
+        try {
+            const record = await ImpactRepo().findOne({
+                where: { id, userId: req.user.userId },
+            });
+
+            if (!record) {
+                return res.status(404).json({ message: "Record not found" });
+            }
+
+            await ImpactRepo().remove(record);
+
+            return res.status(200).json({ message: "Record deleted" });
+        } catch (e) {
+            return res.status(500).json({ message: (e as Error).message ?? "Internal server error" });
+        }
+    }
+    /**
+     * DELETE /environmental-impact/reset-all
+     * Wipe ALL EnvironmentalImpact records so stale data can be recomputed.
+     * Use after a formula change: DELETE → Compute All Users → fresh data.
+     */
+    public async resetAllRecords(req: Request, res: Response) {
+        if (!req.user?.userId) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+        try {
+            const result = await ImpactRepo().delete({});
+            return res.status(200).json({
+                message: "All environmental impact records deleted. Run POST /compute-all to recompute.",
+                deleted: result.affected ?? 0,
+            });
+        } catch (e) {
+            console.error("[resetAllRecords]", e);
+            return res.status(500).json({ message: (e as Error).message ?? "Internal server error" });
+        }
+    }
+}
+
+export default new EnvironmentalImpactController();

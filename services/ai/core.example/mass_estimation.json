@@ -1,0 +1,17 @@
+{
+  "_comment": "Placeholder calibration for /total-mass. Real values are private.",
+  "detect_conf": 0.25,
+  "real_width_m": 1.0,
+  "depth_scale": 1.0,
+  "ground_percentile": 50,
+  "min_mask_pixels": 100,
+  "densities": [
+    {
+      "keywords": [
+        "plastic"
+      ],
+      "density": 1000
+    }
+  ],
+  "default_density": 1000
+}

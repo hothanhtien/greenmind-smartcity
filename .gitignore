@@ -1,0 +1,50 @@
+# ---- Secrets: only *.env.example files are committed ----
+.env
+.env.*
+*.env
+!.env.example
+!*.env.example
+
+# ---- Private GreenMind core: coefficients, prompts, OCEAN plugins, trained weights ----
+# The real core lives outside this repo (GREENMIND_CORE_DIR / GREENMIND_MODEL_DIR).
+greenmind-core/
+*.pt
+*.pth
+*.onnx
+*.safetensors
+*.ckpt
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+captones_env/
+hf_cache/
+.ipynb_checkpoints/
+services/ai/uploads/
+services/ai/qdrant/qdrant_data/
+
+# ---- Node / Next.js ----
+node_modules/
+.next/
+out/
+dist/
+*.tsbuildinfo
+next-env.d.ts
+services/backend/package-lock.json
+
+# ---- Kotlin / Gradle ----
+.gradle/
+.kotlin/
+**/build/
+local.properties
+*.iml
+captures/
+
+# ---- OS / IDE ----
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log

@@ -1,0 +1,2483 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "GreenMind AI Service",
+    "version": "1.0.0",
+    "description": "HTTP contract of the GreenMind AI service. Core coefficients, prompts, model weights and the OCEAN/behavior engine are private and not included in this repository."
+  },
+  "paths": {
+    "/home": {
+      "get": {
+        "summary": "Home",
+        "operationId": "home_home_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/invoice-pollution": {
+      "post": {
+        "summary": "Invoice Pollution",
+        "operationId": "invoice_pollution_invoice_pollution_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_invoice_pollution_invoice_pollution_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/predict-pollutant-impact": {
+      "post": {
+        "summary": "Predict Pollutant Impact",
+        "operationId": "predict_pollutant_impact_predict_pollutant_impact_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_predict_pollutant_impact_predict_pollutant_impact_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/detect-trash": {
+      "post": {
+        "summary": "Detect Image",
+        "operationId": "detect_image_detect_trash_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_detect_image_detect_trash_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ocr_text": {
+      "post": {
+        "summary": "Ocr Text",
+        "operationId": "ocr_text_ocr_text_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_ocr_text_ocr_text_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/total-mass": {
+      "post": {
+        "summary": "Total Mass Api",
+        "operationId": "total_mass_api_total_mass_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_total_mass_api_total_mass_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/predict_trash_seg": {
+      "post": {
+        "summary": "Segment Trash Image",
+        "operationId": "segment_trash_image_predict_trash_seg_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_segment_trash_image_predict_trash_seg_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/detect-trash-ver2": {
+      "post": {
+        "summary": "Detect Image",
+        "operationId": "detect_image_detect_trash_ver2_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_detect_image_detect_trash_ver2_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/analyze-image-plant": {
+      "post": {
+        "summary": "Analyze Image",
+        "description": "Nhận 1 ảnh, trả về:\n  - diện tích vùng thực vật\n  - diện tích vùng món ăn\n  - tỷ lệ %\n  - ảnh kết quả (base64 cho 2 ảnh)",
+        "operationId": "analyze_image_analyze_image_plant_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_analyze_image_analyze_image_plant_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/generate_subtasks": {
+      "post": {
+        "summary": "Generate Subtasks",
+        "description": "Khi người dùng gửi 1 hành vi (task),\nhệ thống sẽ gọi Gemini để sinh ra các hành vi con.",
+        "operationId": "generate_subtasks_generate_subtasks_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TaskRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/score": {
+      "post": {
+        "summary": "Get Score",
+        "operationId": "get_score_score_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScoreRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/calculate_group_ocean": {
+      "post": {
+        "summary": "Calculate Group Ocean Api",
+        "operationId": "calculate_group_ocean_api_calculate_group_ocean_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GroupOceanRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupOceanResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/calculate_ocean": {
+      "post": {
+        "summary": "Calculate Ocean",
+        "operationId": "calculate_ocean_calculate_ocean_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserAnswers"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OceanResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/combine_question": {
+      "post": {
+        "summary": "Gen Question",
+        "operationId": "gen_question_combine_question_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CombineQuestionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/gen_keyword": {
+      "post": {
+        "summary": "Gen Keyword",
+        "operationId": "gen_keyword_gen_keyword_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/greenmind_core_plugins__gen_keyword__KeywordRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/gen_keyword_ver2": {
+      "post": {
+        "summary": "Gen Keyword",
+        "operationId": "gen_keyword_gen_keyword_ver2_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/greenmind_core_plugins__gen_keyword_ver2__KeywordRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/gen-question": {
+      "post": {
+        "summary": "Gen Question",
+        "description": "Generate survey questions for a given OCEAN factor and behavior input.",
+        "operationId": "gen_question_gen_question_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenQuestionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenQuestionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/gen_template": {
+      "post": {
+        "summary": "Gen Template",
+        "operationId": "gen_template_gen_template_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TemplateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/avg_daily_spend": {
+      "post": {
+        "summary": "Avg Daily Spend",
+        "operationId": "avg_daily_spend_avg_daily_spend_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AvgDailySpendIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/spend_variability": {
+      "post": {
+        "summary": "Spend Variability",
+        "operationId": "spend_variability_spend_variability_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SpendVariabilityIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/brand_novelty": {
+      "post": {
+        "summary": "Brand Novelty",
+        "operationId": "brand_novelty_brand_novelty_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BrandNoveltyIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/list_adherence": {
+      "post": {
+        "summary": "List Adherence Array",
+        "operationId": "list_adherence_array_list_adherence_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListAdherenceInArray"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/daily_distance_km": {
+      "post": {
+        "summary": "Daily Distance Km",
+        "operationId": "daily_distance_km_daily_distance_km_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DailyDistanceIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/novel_location_ratio": {
+      "post": {
+        "summary": "Novel Location Ratio",
+        "operationId": "novel_location_ratio_novel_location_ratio_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NovelLocationIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public_transit_ratio": {
+      "post": {
+        "summary": "Public Transit Ratio",
+        "operationId": "public_transit_ratio_public_transit_ratio_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublicTransitIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/night_out_freq": {
+      "post": {
+        "summary": "Night Out Freq",
+        "operationId": "night_out_freq_night_out_freq_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NightOutIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/healthy_food_ratio": {
+      "post": {
+        "summary": "Healthy Food Ratio",
+        "operationId": "healthy_food_ratio_healthy_food_ratio_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HealthyFoodIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/verify-survey": {
+      "post": {
+        "summary": "Verify Survey",
+        "operationId": "verify_survey_verify_survey_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifySurveyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AnswerItem": {
+        "properties": {
+          "trait": {
+            "type": "string",
+            "enum": [
+              "O",
+              "C",
+              "E",
+              "A",
+              "N"
+            ],
+            "title": "Trait"
+          },
+          "text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text"
+          },
+          "ans": {
+            "type": "string",
+            "title": "Ans"
+          },
+          "key": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "pos",
+                  "neg"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Key",
+            "default": "pos"
+          },
+          "kind": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "frequency",
+                  "yesno",
+                  "likert5",
+                  "rating"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kind",
+            "default": "frequency"
+          },
+          "weight": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weight"
+          }
+        },
+        "type": "object",
+        "required": [
+          "trait",
+          "ans"
+        ],
+        "title": "AnswerItem"
+      },
+      "AvgDailySpendIn": {
+        "properties": {
+          "daily_total": {
+            "type": "number",
+            "title": "Daily Total"
+          },
+          "base_avg": {
+            "type": "number",
+            "title": "Base Avg"
+          },
+          "weight": {
+            "type": "number",
+            "title": "Weight"
+          },
+          "direction": {
+            "type": "string",
+            "title": "Direction",
+            "default": "down"
+          },
+          "sigma_r": {
+            "type": "number",
+            "title": "Sigma R"
+          },
+          "alpha": {
+            "type": "number",
+            "title": "Alpha"
+          },
+          "ocean_score": {
+            "$ref": "#/components/schemas/OceanScore"
+          }
+        },
+        "type": "object",
+        "required": [
+          "daily_total",
+          "base_avg",
+          "ocean_score"
+        ],
+        "title": "AvgDailySpendIn"
+      },
+      "BaseResponse": {
+        "properties": {
+          "metric": {
+            "type": "string",
+            "title": "Metric"
+          },
+          "vt": {
+            "type": "number",
+            "title": "Vt"
+          },
+          "bt": {
+            "type": "number",
+            "title": "Bt"
+          },
+          "r": {
+            "type": "number",
+            "title": "R"
+          },
+          "n": {
+            "type": "number",
+            "title": "N"
+          },
+          "contrib": {
+            "type": "number",
+            "title": "Contrib"
+          },
+          "new_ocean_score": {
+            "$ref": "#/components/schemas/OceanScore"
+          },
+          "mechanismFeedback": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Mechanismfeedback"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "metric",
+          "vt",
+          "bt",
+          "r",
+          "n",
+          "contrib",
+          "new_ocean_score",
+          "mechanismFeedback"
+        ],
+        "title": "BaseResponse"
+      },
+      "Body_analyze_image_analyze_image_plant_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_analyze_image_analyze_image_plant_post"
+      },
+      "Body_detect_image_detect_trash_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_detect_image_detect_trash_post"
+      },
+      "Body_detect_image_detect_trash_ver2_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_detect_image_detect_trash_ver2_post"
+      },
+      "Body_invoice_pollution_invoice_pollution_post": {
+        "properties": {
+          "file": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "binary"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          }
+        },
+        "type": "object",
+        "title": "Body_invoice_pollution_invoice_pollution_post"
+      },
+      "Body_ocr_text_ocr_text_post": {
+        "properties": {
+          "file": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "binary"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          }
+        },
+        "type": "object",
+        "title": "Body_ocr_text_ocr_text_post"
+      },
+      "Body_predict_pollutant_impact_predict_pollutant_impact_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_predict_pollutant_impact_predict_pollutant_impact_post"
+      },
+      "Body_segment_trash_image_predict_trash_seg_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_segment_trash_image_predict_trash_seg_post"
+      },
+      "Body_total_mass_api_total_mass_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_total_mass_api_total_mass_post"
+      },
+      "BrandNoveltyIn": {
+        "properties": {
+          "brands_prev": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Brands Prev"
+          },
+          "brands_now": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Brands Now"
+          },
+          "base_likert": {
+            "type": "integer",
+            "title": "Base Likert"
+          },
+          "weight": {
+            "type": "number",
+            "title": "Weight"
+          },
+          "direction": {
+            "type": "string",
+            "title": "Direction",
+            "default": "up"
+          },
+          "sigma_r": {
+            "type": "number",
+            "title": "Sigma R"
+          },
+          "alpha": {
+            "type": "number",
+            "title": "Alpha"
+          },
+          "ocean_score": {
+            "$ref": "#/components/schemas/OceanScore"
+          }
+        },
+        "type": "object",
+        "required": [
+          "brands_prev",
+          "brands_now",
+          "base_likert",
+          "ocean_score"
+        ],
+        "title": "BrandNoveltyIn"
+      },
+      "CombineQuestionRequest": {
+        "properties": {
+          "input": {
+            "$ref": "#/components/schemas/InputData"
+          },
+          "templates": {
+            "items": {
+              "$ref": "#/components/schemas/Template"
+            },
+            "type": "array",
+            "title": "Templates"
+          }
+        },
+        "type": "object",
+        "required": [
+          "input",
+          "templates"
+        ],
+        "title": "CombineQuestionRequest"
+      },
+      "Context": {
+        "properties": {
+          "population": {
+            "$ref": "#/components/schemas/Population"
+          },
+          "setting": {
+            "type": "string",
+            "title": "Setting"
+          },
+          "event": {
+            "type": "string",
+            "title": "Event"
+          }
+        },
+        "type": "object",
+        "required": [
+          "population",
+          "setting",
+          "event"
+        ],
+        "title": "Context"
+      },
+      "DailyDistanceIn": {
+        "properties": {
+          "distance_today": {
+            "type": "number",
+            "title": "Distance Today"
+          },
+          "base_avg_distance": {
+            "type": "number",
+            "title": "Base Avg Distance"
+          },
+          "weight": {
+            "type": "number",
+            "title": "Weight"
+          },
+          "direction": {
+            "type": "string",
+            "title": "Direction",
+            "default": "up"
+          },
+          "sigma_r": {
+            "type": "number",
+            "title": "Sigma R"
+          },
+          "alpha": {
+            "type": "number",
+            "title": "Alpha"
+          },
+          "ocean_score": {
+            "$ref": "#/components/schemas/OceanScore"
+          }
+        },
+        "type": "object",
+        "required": [
+          "distance_today",
+          "base_avg_distance",
+          "ocean_score"
+        ],
+        "title": "DailyDistanceIn"
+      },
+      "GenQuestionRequest": {
+        "properties": {
+          "ocean": {
+            "type": "string",
+            "enum": [
+              "O",
+              "C",
+              "E",
+              "A",
+              "N"
+            ],
+            "title": "Ocean"
+          },
+          "behavior_input": {
+            "type": "string",
+            "title": "Behavior Input"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ocean",
+          "behavior_input"
+        ],
+        "title": "GenQuestionRequest"
+      },
+      "GenQuestionResponse": {
+        "properties": {
+          "total_templates": {
+            "type": "integer",
+            "title": "Total Templates"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/QuestionItem"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_templates",
+          "items"
+        ],
+        "title": "GenQuestionResponse"
+      },
+      "GroupOceanRequest": {
+        "properties": {
+          "target_segment": {
+            "$ref": "#/components/schemas/TargetSegment"
+          },
+          "users": {
+            "items": {
+              "$ref": "#/components/schemas/UserOceanScore"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Users"
+          }
+        },
+        "type": "object",
+        "required": [
+          "target_segment",
+          "users"
+        ],
+        "title": "GroupOceanRequest"
+      },
+      "GroupOceanResponse": {
+        "properties": {
+          "segment_profile": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Segment Profile"
+          },
+          "group_ocean_score": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "propertyNames": {
+              "enum": [
+                "O",
+                "C",
+                "E",
+                "A",
+                "N"
+              ]
+            },
+            "type": "object",
+            "title": "Group Ocean Score"
+          }
+        },
+        "type": "object",
+        "required": [
+          "segment_profile",
+          "group_ocean_score"
+        ],
+        "title": "GroupOceanResponse"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HealthyFoodIn": {
+        "properties": {
+          "plant_meals": {
+            "type": "integer",
+            "title": "Plant Meals"
+          },
+          "total_meals": {
+            "type": "integer",
+            "title": "Total Meals"
+          },
+          "base_likert": {
+            "type": "integer",
+            "title": "Base Likert"
+          },
+          "weight": {
+            "type": "number",
+            "title": "Weight"
+          },
+          "direction": {
+            "type": "string",
+            "title": "Direction",
+            "default": "up"
+          },
+          "sigma_r": {
+            "type": "number",
+            "title": "Sigma R"
+          },
+          "alpha": {
+            "type": "number",
+            "title": "Alpha"
+          },
+          "ocean_score": {
+            "$ref": "#/components/schemas/OceanScore"
+          }
+        },
+        "type": "object",
+        "required": [
+          "plant_meals",
+          "total_meals",
+          "base_likert",
+          "ocean_score"
+        ],
+        "title": "HealthyFoodIn"
+      },
+      "InputData": {
+        "properties": {
+          "ocean": {
+            "type": "string",
+            "title": "Ocean"
+          },
+          "behavior": {
+            "type": "string",
+            "title": "Behavior"
+          },
+          "age": {
+            "type": "string",
+            "title": "Age"
+          },
+          "location": {
+            "type": "string",
+            "title": "Location"
+          },
+          "gender": {
+            "type": "string",
+            "title": "Gender"
+          },
+          "keywords": {
+            "type": "string",
+            "title": "Keywords"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ocean",
+          "behavior",
+          "age",
+          "location",
+          "gender",
+          "keywords"
+        ],
+        "title": "InputData"
+      },
+      "Item": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "quantity": {
+            "type": "integer",
+            "title": "Quantity"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "quantity"
+        ],
+        "title": "Item"
+      },
+      "ListAdherenceInArray": {
+        "properties": {
+          "todos": {
+            "items": {
+              "$ref": "#/components/schemas/TodoItem"
+            },
+            "type": "array",
+            "title": "Todos"
+          },
+          "base_likert": {
+            "type": "integer",
+            "title": "Base Likert"
+          },
+          "weight": {
+            "type": "number",
+            "title": "Weight"
+          },
+          "direction": {
+            "type": "string",
+            "title": "Direction",
+            "default": "up"
+          },
+          "sigma_r": {
+            "type": "number",
+            "title": "Sigma R"
+          },
+          "alpha": {
+            "type": "number",
+            "title": "Alpha"
+          },
+          "ocean_score": {
+            "$ref": "#/components/schemas/OceanScore"
+          }
+        },
+        "type": "object",
+        "required": [
+          "todos",
+          "base_likert",
+          "ocean_score"
+        ],
+        "title": "ListAdherenceInArray"
+      },
+      "ModelInfo": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "ocean": {
+            "type": "string",
+            "title": "Ocean"
+          },
+          "behavior": {
+            "type": "string",
+            "title": "Behavior"
+          },
+          "age": {
+            "type": "string",
+            "title": "Age"
+          },
+          "location": {
+            "type": "string",
+            "title": "Location"
+          },
+          "gender": {
+            "type": "string",
+            "title": "Gender"
+          },
+          "keywords": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Keywords"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "ocean",
+          "behavior",
+          "age",
+          "location",
+          "gender"
+        ],
+        "title": "ModelInfo"
+      },
+      "NightOutIn": {
+        "properties": {
+          "night_out_count": {
+            "type": "integer",
+            "title": "Night Out Count"
+          },
+          "base_night_out": {
+            "type": "integer",
+            "title": "Base Night Out"
+          },
+          "weight": {
+            "type": "number",
+            "title": "Weight"
+          },
+          "direction": {
+            "type": "string",
+            "title": "Direction",
+            "default": "up"
+          },
+          "sigma_r": {
+            "type": "number",
+            "title": "Sigma R"
+          },
+          "alpha": {
+            "type": "number",
+            "title": "Alpha"
+          },
+          "ocean_score": {
+            "$ref": "#/components/schemas/OceanScore"
+          }
+        },
+        "type": "object",
+        "required": [
+          "night_out_count",
+          "base_night_out",
+          "ocean_score"
+        ],
+        "title": "NightOutIn"
+      },
+      "NovelLocationIn": {
+        "properties": {
+          "locations_prev": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Locations Prev"
+          },
+          "locations_now": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Locations Now"
+          },
+          "base_likert": {
+            "type": "integer",
+            "title": "Base Likert"
+          },
+          "weight": {
+            "type": "number",
+            "title": "Weight"
+          },
+          "direction": {
+            "type": "string",
+            "title": "Direction",
+            "default": "up"
+          },
+          "sigma_r": {
+            "type": "number",
+            "title": "Sigma R"
+          },
+          "alpha": {
+            "type": "number",
+            "title": "Alpha"
+          },
+          "ocean_score": {
+            "$ref": "#/components/schemas/OceanScore"
+          }
+        },
+        "type": "object",
+        "required": [
+          "locations_prev",
+          "locations_now",
+          "base_likert",
+          "ocean_score"
+        ],
+        "title": "NovelLocationIn"
+      },
+      "OceanResult": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "scores": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "propertyNames": {
+              "enum": [
+                "O",
+                "C",
+                "E",
+                "A",
+                "N"
+              ]
+            },
+            "type": "object",
+            "title": "Scores"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "scores"
+        ],
+        "title": "OceanResult"
+      },
+      "OceanScore": {
+        "properties": {
+          "O": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "O"
+          },
+          "C": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "C"
+          },
+          "E": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "E"
+          },
+          "A": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "A"
+          },
+          "N": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "N"
+          }
+        },
+        "type": "object",
+        "required": [
+          "O",
+          "C",
+          "E",
+          "A",
+          "N"
+        ],
+        "title": "OceanScore"
+      },
+      "Option": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "value": {
+            "type": "string",
+            "title": "Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text",
+          "value"
+        ],
+        "title": "Option"
+      },
+      "Population": {
+        "properties": {
+          "age_range": {
+            "type": "string",
+            "title": "Age Range"
+          },
+          "gender": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Gender"
+          },
+          "locations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Locations"
+          },
+          "urban": {
+            "type": "boolean",
+            "title": "Urban"
+          }
+        },
+        "type": "object",
+        "required": [
+          "age_range",
+          "gender",
+          "locations",
+          "urban"
+        ],
+        "title": "Population"
+      },
+      "PublicTransitIn": {
+        "properties": {
+          "public_transit_trips": {
+            "type": "integer",
+            "title": "Public Transit Trips"
+          },
+          "total_trips": {
+            "type": "integer",
+            "title": "Total Trips"
+          },
+          "base_likert": {
+            "type": "integer",
+            "title": "Base Likert"
+          },
+          "weight": {
+            "type": "number",
+            "title": "Weight"
+          },
+          "direction": {
+            "type": "string",
+            "title": "Direction",
+            "default": "up"
+          },
+          "sigma_r": {
+            "type": "number",
+            "title": "Sigma R"
+          },
+          "alpha": {
+            "type": "number",
+            "title": "Alpha"
+          },
+          "ocean_score": {
+            "$ref": "#/components/schemas/OceanScore"
+          }
+        },
+        "type": "object",
+        "required": [
+          "public_transit_trips",
+          "total_trips",
+          "base_likert",
+          "ocean_score"
+        ],
+        "title": "PublicTransitIn"
+      },
+      "QuestionItem": {
+        "properties": {
+          "ocean": {
+            "type": "string",
+            "enum": [
+              "O",
+              "C",
+              "E",
+              "A",
+              "N"
+            ],
+            "title": "Ocean"
+          },
+          "template_id": {
+            "type": "string",
+            "title": "Template Id"
+          },
+          "question": {
+            "type": "string",
+            "title": "Question"
+          },
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/Option"
+            },
+            "type": "array",
+            "title": "Options"
+          },
+          "behavior_input": {
+            "type": "string",
+            "title": "Behavior Input"
+          },
+          "behavior_normalized": {
+            "type": "string",
+            "title": "Behavior Normalized"
+          },
+          "normalize_score": {
+            "type": "number",
+            "title": "Normalize Score"
+          },
+          "qtype": {
+            "type": "string",
+            "enum": [
+              "frequency",
+              "yesno"
+            ],
+            "title": "Qtype"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ocean",
+          "template_id",
+          "question",
+          "options",
+          "behavior_input",
+          "behavior_normalized",
+          "normalize_score",
+          "qtype"
+        ],
+        "title": "QuestionItem"
+      },
+      "ScoreRequest": {
+        "properties": {
+          "current_score": {
+            "type": "number",
+            "title": "Current Score"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/Item"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "ScoreRequest"
+      },
+      "SpendVariabilityIn": {
+        "properties": {
+          "daily_spend": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Daily Spend"
+          },
+          "base_likert": {
+            "type": "integer",
+            "title": "Base Likert"
+          },
+          "weight": {
+            "type": "number",
+            "title": "Weight"
+          },
+          "direction": {
+            "type": "string",
+            "title": "Direction",
+            "default": "up"
+          },
+          "sigma_r": {
+            "type": "number",
+            "title": "Sigma R"
+          },
+          "alpha": {
+            "type": "number",
+            "title": "Alpha"
+          },
+          "ocean_score": {
+            "$ref": "#/components/schemas/OceanScore"
+          }
+        },
+        "type": "object",
+        "required": [
+          "daily_spend",
+          "base_likert",
+          "ocean_score"
+        ],
+        "title": "SpendVariabilityIn"
+      },
+      "TargetSegment": {
+        "properties": {
+          "location_detail": {
+            "type": "string",
+            "title": "Location Detail"
+          },
+          "age_detail": {
+            "type": "integer",
+            "title": "Age Detail"
+          },
+          "gender_detail": {
+            "type": "string",
+            "title": "Gender Detail"
+          }
+        },
+        "type": "object",
+        "required": [
+          "location_detail",
+          "age_detail",
+          "gender_detail"
+        ],
+        "title": "TargetSegment"
+      },
+      "TaskRequest": {
+        "properties": {
+          "task": {
+            "type": "string",
+            "title": "Task"
+          }
+        },
+        "type": "object",
+        "required": [
+          "task"
+        ],
+        "title": "TaskRequest"
+      },
+      "Template": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "intent": {
+            "type": "string",
+            "title": "Intent"
+          },
+          "placeholders": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Placeholders"
+          },
+          "prompt": {
+            "type": "string",
+            "title": "Prompt"
+          },
+          "question_type": {
+            "type": "string",
+            "title": "Question Type"
+          },
+          "answer": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Answer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "description",
+          "intent",
+          "placeholders",
+          "prompt",
+          "question_type",
+          "answer"
+        ],
+        "title": "Template"
+      },
+      "TemplateRequest": {
+        "properties": {
+          "ocean": {
+            "type": "string",
+            "enum": [
+              "O",
+              "C",
+              "E",
+              "A",
+              "N"
+            ],
+            "title": "Ocean"
+          },
+          "behavior": {
+            "type": "string",
+            "title": "Behavior"
+          },
+          "age": {
+            "type": "string",
+            "title": "Age"
+          },
+          "location": {
+            "type": "string",
+            "title": "Location"
+          },
+          "gender": {
+            "type": "string",
+            "title": "Gender"
+          },
+          "keywords": {
+            "type": "string",
+            "title": "Keywords"
+          }
+        },
+        "type": "object",
+        "title": "TemplateRequest"
+      },
+      "TodoItem": {
+        "properties": {
+          "task": {
+            "type": "string",
+            "title": "Task"
+          },
+          "done": {
+            "type": "boolean",
+            "title": "Done"
+          }
+        },
+        "type": "object",
+        "required": [
+          "task",
+          "done"
+        ],
+        "title": "TodoItem"
+      },
+      "UserAnswers": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "answers": {
+            "items": {
+              "$ref": "#/components/schemas/AnswerItem"
+            },
+            "type": "array",
+            "title": "Answers"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id"
+        ],
+        "title": "UserAnswers"
+      },
+      "UserOceanScore": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "scores": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "propertyNames": {
+              "enum": [
+                "O",
+                "C",
+                "E",
+                "A",
+                "N"
+              ]
+            },
+            "type": "object",
+            "title": "Scores"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "scores"
+        ],
+        "title": "UserOceanScore"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "VerifySurveyRequest": {
+        "properties": {
+          "model": {
+            "$ref": "#/components/schemas/ModelInfo"
+          },
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "survey_result": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Survey Result"
+          }
+        },
+        "type": "object",
+        "required": [
+          "model",
+          "user_id",
+          "survey_result"
+        ],
+        "title": "VerifySurveyRequest"
+      },
+      "greenmind_core_plugins__gen_keyword__KeywordRequest": {
+        "properties": {
+          "ocean": {
+            "type": "string",
+            "enum": [
+              "O",
+              "C",
+              "E",
+              "A",
+              "N"
+            ],
+            "title": "Ocean"
+          },
+          "behavior": {
+            "type": "string",
+            "title": "Behavior"
+          },
+          "age": {
+            "type": "string",
+            "title": "Age"
+          },
+          "location": {
+            "type": "string",
+            "title": "Location"
+          },
+          "gender": {
+            "type": "string",
+            "title": "Gender"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ocean",
+          "behavior",
+          "age",
+          "location",
+          "gender"
+        ],
+        "title": "KeywordRequest"
+      },
+      "greenmind_core_plugins__gen_keyword_ver2__KeywordRequest": {
+        "properties": {
+          "ocean": {
+            "type": "string",
+            "enum": [
+              "O",
+              "C",
+              "E",
+              "A",
+              "N"
+            ],
+            "title": "Ocean"
+          },
+          "behavior": {
+            "type": "string",
+            "title": "Behavior"
+          },
+          "context": {
+            "$ref": "#/components/schemas/Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ocean",
+          "behavior",
+          "context"
+        ],
+        "title": "KeywordRequest"
+      }
+    }
+  }
+}

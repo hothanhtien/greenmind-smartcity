@@ -1,0 +1,4 @@
+Placeholder prompt (real prompt is private). Return invoice JSON.
+
+OCR:
+{ocr_text}
